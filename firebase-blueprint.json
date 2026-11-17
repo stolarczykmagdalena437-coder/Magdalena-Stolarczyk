@@ -1,0 +1,259 @@
+{
+  "entities": {
+    "RoomListing": {
+      "title": "RoomListing",
+      "description": "Rental room, studio, mini-apartment, or condominium listing managed exclusively by the authorized owner agent.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Display title of the room or apartment listing.",
+          "minLength": 5,
+          "maxLength": 120
+        },
+        "propertyType": {
+          "type": "string",
+          "description": "Category of rental unit.",
+          "enum": ["phong-tro", "chung-cu-mini", "studio", "can-ho-1pn", "can-ho-2pn"]
+        },
+        "district": {
+          "type": "string",
+          "description": "District or ward area in Vietnam.",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "address": {
+          "type": "string",
+          "description": "Street address of the building.",
+          "minLength": 5,
+          "maxLength": 180
+        },
+        "rentPrice": {
+          "type": "number",
+          "description": "Monthly base rent in VND."
+        },
+        "electricityPrice": {
+          "type": "number",
+          "description": "Electricity unit rate in VND per kWh."
+        },
+        "waterPrice": {
+          "type": "number",
+          "description": "Water unit rate in VND."
+        },
+        "waterUnit": {
+          "type": "string",
+          "description": "Billing unit for water.",
+          "enum": ["nguoi", "khoi", "mien-phi"]
+        },
+        "serviceFee": {
+          "type": "number",
+          "description": "Monthly building service fee in VND."
+        },
+        "serviceNote": {
+          "type": "string",
+          "description": "Included items in the service fee.",
+          "minLength": 0,
+          "maxLength": 160
+        },
+        "areaSqm": {
+          "type": "number",
+          "description": "Usable room floor area in square meters."
+        },
+        "depositMonths": {
+          "type": "number",
+          "description": "Security deposit required in months of rent."
+        },
+        "maxOccupants": {
+          "type": "number",
+          "description": "Maximum allowed tenants in the room."
+        },
+        "floorLabel": {
+          "type": "string",
+          "description": "Floor level and elevator indicator.",
+          "minLength": 1,
+          "maxLength": 30
+        },
+        "status": {
+          "type": "string",
+          "description": "Current occupancy status.",
+          "enum": ["available", "soon", "rented"]
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed room features, neighborhood notes, and house rules.",
+          "minLength": 10,
+          "maxLength": 1500
+        },
+        "images": {
+          "type": "array",
+          "description": "Bounded list (1 to 5) of room photo URLs or compressed data URLs."
+        },
+        "amenities": {
+          "type": "array",
+          "description": "Bounded list (0 to 12) of room amenities."
+        },
+        "lat": {
+          "type": "number",
+          "description": "Latitude coordinate for map pin."
+        },
+        "lng": {
+          "type": "number",
+          "description": "Longitude coordinate for map pin."
+        },
+        "isPublished": {
+          "type": "boolean",
+          "description": "Whether the listing is visible to public viewers."
+        },
+        "ownerUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the owner agent who created the listing.",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of latest modification."
+        }
+      },
+      "required": [
+        "title",
+        "propertyType",
+        "district",
+        "address",
+        "rentPrice",
+        "electricityPrice",
+        "waterPrice",
+        "waterUnit",
+        "serviceFee",
+        "serviceNote",
+        "areaSqm",
+        "depositMonths",
+        "maxOccupants",
+        "floorLabel",
+        "status",
+        "description",
+        "images",
+        "amenities",
+        "lat",
+        "lng",
+        "isPublished",
+        "ownerUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Public website branding, hero content, and agent contact info editable solely by the authorized owner.",
+      "type": "object",
+      "properties": {
+        "brandName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "heroTitle": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 140
+        },
+        "heroSubtitle": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 280
+        },
+        "heroImageUrl": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 160000
+        },
+        "agentName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "agentRole": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "publicPhone": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 20,
+          "pattern": "^[0-9+\\-\\s().]{8,20}$"
+        },
+        "publicZalo": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 20,
+          "pattern": "^[0-9+\\-\\s().]{8,20}$"
+        },
+        "officeAddress": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 180
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "brandName",
+        "heroTitle",
+        "heroSubtitle",
+        "heroImageUrl",
+        "agentName",
+        "agentRole",
+        "publicPhone",
+        "publicZalo",
+        "officeAddress",
+        "ownerUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Trusted admin role lookup document keyed by Firebase Auth UID.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "maxLength": 120
+        }
+      },
+      "required": ["email"]
+    }
+  },
+  "firestore": {
+    "/rooms/{roomId}": {
+      "schema": { "$ref": "#/entities/RoomListing" },
+      "description": "Collection of rental room and apartment listings. Publicly readable when isPublished == true; writable strictly by verified owner admin."
+    },
+    "/siteSettings/{settingId}": {
+      "schema": { "$ref": "#/entities/SiteSettings" },
+      "description": "Singleton website configuration at /siteSettings/public. Readable via get; writable strictly by verified owner admin."
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Read-only admin registry locked against client writes."
+    }
+  }
+}

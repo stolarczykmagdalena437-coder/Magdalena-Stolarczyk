@@ -1,0 +1,8 @@
+{
+  "name": "Remix Trọ Xanh Living — Hệ Thống Phòng Trọ \u0026 Căn Hộ Dịch Vụ",
+  "description": "Nền tảng tìm kiếm phòng trọ, studio, chung cư mini minh bạch giá điện nước, phí dịch vụ, diện tích thực tế và bản đồ vị trí trực quan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

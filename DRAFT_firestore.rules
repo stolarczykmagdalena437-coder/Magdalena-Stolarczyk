@@ -1,0 +1,186 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email_verified == true && (
+          request.auth.token.email == 'stolarczykmagdalena437@gmail.com' ||
+          exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        );
+    }
+
+    function isValidRoomListing(data) {
+      return data.keys().hasAll([
+          'title', 'propertyType', 'district', 'address',
+          'rentPrice', 'electricityPrice', 'waterPrice', 'waterUnit',
+          'serviceFee', 'serviceNote', 'areaSqm', 'depositMonths',
+          'maxOccupants', 'floorLabel', 'status', 'description',
+          'images', 'amenities', 'lat', 'lng',
+          'isPublished', 'ownerUid', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'title', 'propertyType', 'district', 'address',
+          'rentPrice', 'electricityPrice', 'waterPrice', 'waterUnit',
+          'serviceFee', 'serviceNote', 'areaSqm', 'depositMonths',
+          'maxOccupants', 'floorLabel', 'status', 'description',
+          'images', 'amenities', 'lat', 'lng',
+          'isPublished', 'ownerUid', 'createdAt', 'updatedAt'
+        ]) &&
+        data.title is string && data.title.size() >= 5 && data.title.size() <= 120 &&
+        data.propertyType is string && data.propertyType.size() <= 30 &&
+        data.propertyType in ['phong-tro', 'chung-cu-mini', 'studio', 'can-ho-1pn', 'can-ho-2pn'] &&
+        data.district is string && data.district.size() >= 2 && data.district.size() <= 60 &&
+        data.address is string && data.address.size() >= 5 && data.address.size() <= 180 &&
+        data.rentPrice is number && data.rentPrice >= 500000 && data.rentPrice <= 200000000 &&
+        data.electricityPrice is number && data.electricityPrice >= 0 && data.electricityPrice <= 50000 &&
+        data.waterPrice is number && data.waterPrice >= 0 && data.waterPrice <= 1000000 &&
+        data.waterUnit is string && data.waterUnit.size() <= 20 &&
+        data.waterUnit in ['nguoi', 'khoi', 'mien-phi'] &&
+        data.serviceFee is number && data.serviceFee >= 0 && data.serviceFee <= 5000000 &&
+        data.serviceNote is string && data.serviceNote.size() <= 160 &&
+        data.areaSqm is number && data.areaSqm >= 8 && data.areaSqm <= 500 &&
+        data.depositMonths is number && data.depositMonths >= 0 && data.depositMonths <= 12 &&
+        data.maxOccupants is number && data.maxOccupants >= 1 && data.maxOccupants <= 10 &&
+        data.floorLabel is string && data.floorLabel.size() >= 1 && data.floorLabel.size() <= 30 &&
+        data.status is string && data.status.size() <= 20 &&
+        data.status in ['available', 'soon', 'rented'] &&
+        data.description is string && data.description.size() >= 10 && data.description.size() <= 1500 &&
+        data.images is list && data.images.size() >= 1 && data.images.size() <= 5 &&
+        data.images[0] is string && data.images[0].size() >= 5 && data.images[0].size() <= 160000 &&
+        data.amenities is list && data.amenities.size() <= 12 &&
+        (data.amenities.size() == 0 || (data.amenities[0] is string && data.amenities[0].size() <= 50)) &&
+        data.lat is number && data.lat >= 8.0 && data.lat <= 24.0 &&
+        data.lng is number && data.lng >= 102.0 && data.lng <= 110.0 &&
+        data.isPublished is bool &&
+        data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidSiteSettings(data) {
+      return data.keys().hasAll([
+          'brandName', 'heroTitle', 'heroSubtitle', 'heroImageUrl',
+          'agentName', 'agentRole', 'publicPhone', 'publicZalo',
+          'officeAddress', 'ownerUid', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'brandName', 'heroTitle', 'heroSubtitle', 'heroImageUrl',
+          'agentName', 'agentRole', 'publicPhone', 'publicZalo',
+          'officeAddress', 'ownerUid', 'createdAt', 'updatedAt'
+        ]) &&
+        data.brandName is string && data.brandName.size() >= 2 && data.brandName.size() <= 60 &&
+        data.heroTitle is string && data.heroTitle.size() >= 10 && data.heroTitle.size() <= 140 &&
+        data.heroSubtitle is string && data.heroSubtitle.size() >= 10 && data.heroSubtitle.size() <= 280 &&
+        data.heroImageUrl is string && data.heroImageUrl.size() >= 5 && data.heroImageUrl.size() <= 160000 &&
+        data.agentName is string && data.agentName.size() >= 2 && data.agentName.size() <= 60 &&
+        data.agentRole is string && data.agentRole.size() >= 2 && data.agentRole.size() <= 80 &&
+        data.publicPhone is string && data.publicPhone.size() >= 8 && data.publicPhone.size() <= 20 &&
+        data.publicPhone.matches('^[0-9+\\-\\s().]{8,20}$') &&
+        data.publicZalo is string && data.publicZalo.size() >= 8 && data.publicZalo.size() <= 20 &&
+        data.publicZalo.matches('^[0-9+\\-\\s().]{8,20}$') &&
+        data.officeAddress is string && data.officeAddress.size() >= 5 && data.officeAddress.size() <= 180 &&
+        data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    match /test/{docId} {
+      allow get: if docId == 'connection';
+      allow list: if false;
+      allow write: if false;
+    }
+
+    match /admins/{adminId} {
+      allow get: if isSignedIn() && isValidId(adminId) && request.auth.uid == adminId;
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /rooms/{roomId} {
+      allow get: if isValidId(roomId) && (existing().isPublished == true || isAdmin());
+      allow list: if existing().isPublished == true || isAdmin();
+
+      allow create: if isSignedIn() &&
+        isValidId(roomId) &&
+        isValidRoomListing(incoming()) &&
+        incoming().ownerUid == request.auth.uid &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+
+      allow update: if isSignedIn() &&
+        isValidRoomListing(incoming()) &&
+        isValidId(roomId) &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        isAdmin() && (
+          // Action 1: Quick Status Change
+          incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']) ||
+          // Action 2: Publish / Draft Toggle
+          incoming().diff(existing()).affectedKeys().hasOnly(['isPublished', 'updatedAt']) ||
+          // Action 3: Full Room Details & Photos Edit
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'title', 'propertyType', 'district', 'address',
+            'rentPrice', 'electricityPrice', 'waterPrice', 'waterUnit',
+            'serviceFee', 'serviceNote', 'areaSqm', 'depositMonths',
+            'maxOccupants', 'floorLabel', 'status', 'description',
+            'images', 'amenities', 'lat', 'lng',
+            'isPublished', 'updatedAt'
+          ])
+        );
+
+      allow delete: if isSignedIn() && isValidId(roomId) && isAdmin();
+    }
+
+    match /siteSettings/{settingId} {
+      allow get: if settingId == 'public';
+      allow list: if false;
+
+      allow create: if isSignedIn() &&
+        settingId == 'public' &&
+        isValidSiteSettings(incoming()) &&
+        incoming().ownerUid == request.auth.uid &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+
+      allow update: if isSignedIn() &&
+        isValidSiteSettings(incoming()) &&
+        settingId == 'public' &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        isAdmin() &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'brandName', 'heroTitle', 'heroSubtitle', 'heroImageUrl',
+          'agentName', 'agentRole', 'publicPhone', 'publicZalo',
+          'officeAddress', 'updatedAt'
+        ]);
+
+      allow delete: if false;
+    }
+  }
+}
